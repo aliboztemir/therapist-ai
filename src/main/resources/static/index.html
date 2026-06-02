@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>TherapistAI</title>
-    <link rel="icon" type="image/png" href="/therapist-ai-home-page.png" />
+    <link rel="icon" type="image/png" href="therapist-ai-home-page.png" />
 
     <!-- Cloudflare Turnstile — replace data-sitekey with your real key for production -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -152,7 +152,7 @@
 <main class="page">
     <section class="container">
         <img
-            src="/therapist-ai-home-page.png"
+            src="therapist-ai-home-page.png"
             alt="TherapistAI"
             style="width: 180px; height: auto; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.10);"
         />
@@ -161,7 +161,7 @@
         <p class="subtitle">AI-powered psychotherapy-inspired conversational assistant</p>
 
         <div class="chat-box">
-            <textarea id="message" placeholder="Type your message here..." maxlength="500"></textarea>
+            <textarea id="message" aria-label="Message" placeholder="Type your message here..." maxlength="500"></textarea>
             <div id="charCounter" class="char-counter">0 / 500</div>
 
             <div class="actions">
