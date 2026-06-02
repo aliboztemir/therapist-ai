@@ -85,6 +85,11 @@ class CreateDocumentUseCaseTest {
         public List<Document> findAll() {
             return List.copyOf(saved);
         }
+
+        @Override
+        public void delete(UUID id) {
+            saved.removeIf(d -> d.getId().equals(id));
+        }
     }
 }
 

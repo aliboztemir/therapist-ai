@@ -30,5 +30,10 @@ public class InMemoryDocumentRepository implements DocumentRepository {
     public List<Document> findAll() {
         return List.copyOf(store.values());
     }
+
+    @Override
+    public void delete(UUID id) {
+        store.remove(id);
+    }
 }
 
