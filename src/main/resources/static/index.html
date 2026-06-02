@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>TherapistAI</title>
+
+    <meta name="description" content="AI-powered psychotherapy-inspired conversational assistant." />
+    <meta name="keywords" content="AI, RAG, chatbot, therapist, conversational assistant, Spring Boot" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="TherapistAI" />
+    <meta property="og:description" content="AI-powered psychotherapy-inspired conversational assistant." />
+    <meta property="og:site_name" content="TherapistAI" />
+
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background: linear-gradient(135deg, #f8fafc, #e5e7eb);
+          color: #111827;
+        }
+
+        .page {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+        }
+
+        .container {
+          width: 100%;
+          max-width: 860px;
+          text-align: center;
+        }
+
+        h1 {
+          font-size: 48px;
+          margin-bottom: 8px;
+        }
+
+        .subtitle {
+          color: #6b7280;
+          margin-bottom: 40px;
+          font-size: 16px;
+        }
+
+        .chat-box {
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 20px;
+          padding: 20px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+          text-align: left;
+        }
+
+        textarea {
+          width: 100%;
+          min-height: 120px;
+          border: none;
+          outline: none;
+          resize: none;
+          font-size: 18px;
+          font-family: inherit;
+          box-sizing: border-box;
+        }
+
+        .actions {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 12px;
+        }
+
+        button {
+          width: 44px;
+          height: 44px;
+          border-radius: 999px;
+          border: none;
+          background: #2563eb;
+          color: white;
+          font-size: 22px;
+          cursor: pointer;
+        }
+
+        button:disabled {
+          background: #9ca3af;
+          cursor: not-allowed;
+        }
+
+        .response {
+          margin-top: 24px;
+          background: #ffffff;
+          border: 1px solid #e5e7eb;
+          border-radius: 16px;
+          padding: 18px;
+          text-align: left;
+          display: none;
+          line-height: 1.6;
+        }
+
+        .footer {
+          margin-top: 32px;
+          font-size: 12px;
+          color: #6b7280;
+        }
+
+        .footer a {
+          color: #2563eb;
+          text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+<main class="page">
+    <section class="container">
+        <h1>TherapistAI</h1>
+        <p class="subtitle">AI-powered psychotherapy-inspired conversational assistant</p>
+
+        <div class="chat-box">
+            <textarea id="message" placeholder="Type your message here..."></textarea>
+
+            <div class="actions">
+                <button id="sendButton" disabled>→</button>
+            </div>
+        </div>
+
+        <div id="response" class="response"></div>
+
+        <div class="footer">
+            This project is for NLP/RAG experimentation only. It is not a medical, psychological, or therapeutic service.
+        </div>
+    </section>
+</main>
+
+<script>
+    const textarea = document.getElementById("message");
+    const button = document.getElementById("sendButton");
+    const responseBox = document.getElementById("response");
+
+    textarea.addEventListener("input", () => {
+      button.disabled = textarea.value.trim().length === 0;
+    });
+
+    button.addEventListener("click", async () => {
+      const message = textarea.value.trim();
+
+      if (!message) {
+        return;
+      }
+
+      button.disabled = true;
+      responseBox.style.display = "block";
+      responseBox.textContent = "Thinking...";
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message })
+        });
+
+        if (!res.ok) {
+          throw new Error("Request failed");
+        }
+
+        const data = await res.json();
+        responseBox.textContent = data.answer || "No response received.";
+      } catch (error) {
+        responseBox.textContent = "Something went wrong. Please try again.";
+      } finally {
+        button.disabled = textarea.value.trim().length === 0;
+      }
+    });
+</script>
+</body>
+</html>

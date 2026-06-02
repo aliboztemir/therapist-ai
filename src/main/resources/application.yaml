@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: therapist-ai
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:dummy-key}
+
+  jpa:
+    open-in-view: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+server:
+  port: 8080
+
+  servlet:
+    session:
+      persistent: false
