@@ -2,17 +2,17 @@
 
 TherapistAI is a modern reimplementation of my university graduation thesis project, originally developed approximately 15 years ago.
 
-The original project was built in Java and focused on Turkish Natural Language Processing (NLP). At the time, large language models did not exist, so the system relied on linguistic analysis and similarity matching techniques to simulate therapist-style conversations.
+The original project was built in Java and focused on Turkish Natural Language Processing (NLP). At the time, large language models did not exist, so the system relied on linguistic analysis, text similarity algorithms, and handcrafted conversational rules to simulate therapist-style interactions.
 
-The application analyzed user messages using Turkish NLP tools such as Zemberek and searched a collection of psychotherapy-inspired dialogue datasets to identify similar conversations and retrieve relevant responses.
-
-The original datasets included psychotherapy dialogue examples, therapist-patient conversations, and educational resources related to psychotherapy and counseling techniques.
+The application analyzed user messages using Turkish NLP tools such as Zemberek and searched psychotherapy-inspired dialogue datasets to identify similar conversations and generate relevant responses.
 
 Fifteen years later, this project revisits the same idea using modern AI technologies.
 
-Instead of relying solely on keyword matching and similarity algorithms, TherapistAI combines Large Language Models (LLMs), Retrieval-Augmented Generation (RAG), vector embeddings, conversational memory, and semantic search to create more natural and context-aware interactions.
+Instead of relying solely on keyword matching and similarity algorithms, TherapistAI leverages Large Language Models (LLMs), conversational memory, semantic search, vector embeddings, and Retrieval-Augmented Generation (RAG) concepts to create more natural and context-aware interactions.
 
-This project is both a technical modernization of an old academic project and an exploration of how conversational AI has evolved over the last decade and a half.
+This project serves both as a modernization of an academic NLP project and as an exploration of how conversational AI has evolved over the last decade and a half.
+
+---
 
 ## Objectives
 
@@ -20,8 +20,11 @@ This project is both a technical modernization of an old academic project and an
 * Explore conversational AI architectures with Java and Spring Boot
 * Implement Retrieval-Augmented Generation (RAG)
 * Experiment with vector search and semantic retrieval
-* Build long-term conversational memory
+* Build conversational memory capabilities
 * Create a psychotherapy-inspired conversational assistant
+* Evaluate modern AI engineering patterns and architectures
+
+---
 
 ## Technology Stack
 
@@ -33,28 +36,111 @@ This project is both a technical modernization of an old academic project and an
 * pgvector
 * Docker
 * Maven
+* Render
 
-## Current Status
+---
 
-Implemented:
+## Project Roadmap
 
-* Spring Boot application
-* OpenAI chat integration
-* Web-based chat interface
+### Milestone 1 — Project Foundation ✅
+
+* Spring Boot project setup
+* Maven configuration
+* Project structure
+* Local development environment
+* Docker support
+
+### Milestone 2 — Web Interface ✅
+
+* Chat UI
+* Static frontend
+* REST integration
+* Welcome page
+
+### Milestone 3 — OpenAI Integration ✅
+
+* Spring AI integration
+* OpenAI ChatModel integration
 * Prompt management
-* PostgreSQL and pgvector infrastructure
+* Psychotherapy-inspired system prompt
 
-Planned:
+### Milestone 4 — Conversation Memory ✅
 
-* Conversation memory
-* Dataset ingestion
-* Embedding generation
-* Vector search
-* Retrieval-Augmented Generation (RAG)
-* Automated testing
+* Conversation IDs
+* Multi-message conversations
+* In-memory conversation storage
+* Context preservation across messages
+
+### Milestone 5 — Automated Testing ✅
+
+* Unit tests
+* Controller tests
+* Conversation memory tests
+* Validation tests
+
+### Milestone 6 — Cloud Deployment ✅
+
+* Docker containerization
+* Render deployment
+* Public demo environment
+* Health monitoring
+
+### Milestone 7 — Safety Layer 🔄 In Progress
+
+* Basic guardrails
+* High-risk content detection
+* Crisis response handling
+* Safety-related test coverage
+
+### Milestone 8 — Knowledge Base Ingestion ⏳ Planned
+
+* Psychotherapy datasets
+* Document ingestion pipeline
+* Dataset normalization
+* Chunk generation
+
+### Milestone 9 — Embeddings & Vector Storage ⏳ Planned
+
+* OpenAI embeddings
+* PostgreSQL integration
+* pgvector integration
+* Embedding generation pipeline
+
+### Milestone 10 — Semantic Retrieval (RAG) ⏳ Planned
+
+* Similarity search
+* Context retrieval
+* Retrieval-Augmented Generation
+* Source grounding
+
+### Milestone 11 — Persistent Memory ⏳ Planned
+
+* Long-term conversations
+* User profiles
+* Conversation history
+* Database persistence
+
+### Milestone 12 — Production Readiness ⏳ Planned
+
+* Observability
+* Metrics
+* Logging
+* Security hardening
+* CI/CD improvements
+* Scalability improvements
+
+---
 
 ## Disclaimer
 
-TherapistAI is an experimental NLP and AI project created for educational and research purposes.
+TherapistAI is an experimental NLP and AI project created for educational, research, and software engineering purposes.
 
 It is not a medical, psychological, psychiatric, or therapeutic service and should not be used as a substitute for professional mental health support.
+
+Any responses generated by the system should be considered informational only.
+
+---
+
+## Live Demo
+
+https://therapist-ai-yzfo.onrender.com/
