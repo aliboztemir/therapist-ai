@@ -50,6 +50,7 @@ class ChatServiceConversationTest {
         when(chatClientBuilder.build()).thenReturn(chatClient);
         when(chatClient.prompt()).thenReturn(requestSpec);
         when(requestSpec.messages(any(java.util.List.class))).thenReturn(requestSpec);
+        when(requestSpec.options(any())).thenReturn(requestSpec);
         when(requestSpec.call()).thenReturn(callResponseSpec);
 
         chatService = new ChatService(chatClientBuilder, promptComposer);
