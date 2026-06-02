@@ -11,7 +11,9 @@ public record ChatRequest(
 
         String userId,
 
-        String conversationId
+        String conversationId,
+
+        String turnstileToken
 
 ) {
 }

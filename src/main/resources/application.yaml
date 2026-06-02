@@ -20,3 +20,8 @@ management:
 
 server:
   port: ${PORT:8080}
+
+turnstile:
+  # Leave blank for local dev — verification is skipped automatically.
+  # Set TURNSTILE_SECRET_KEY env var in production.
+  secret-key: ${TURNSTILE_SECRET_KEY:}

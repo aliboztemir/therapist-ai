@@ -7,6 +7,9 @@
     <title>TherapistAI</title>
     <link rel="icon" type="image/png" href="/therapist-ai-home-page.png" />
 
+    <!-- Cloudflare Turnstile — replace data-sitekey with your real key for production -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
     <meta name="description" content="AI-powered psychotherapy-inspired conversational assistant." />
     <meta name="keywords" content="AI, RAG, chatbot, therapist, conversational assistant, Spring Boot" />
 
@@ -153,6 +156,18 @@
         <div class="chat-box">
             <textarea id="message" placeholder="Type your message here..." maxlength="500"></textarea>
             <div id="charCounter" class="char-counter">0 / 500</div>
+
+            <!-- Turnstile widget
+                 Test site key (always passes): 1x00000000000000000000AA
+                 Replace with your real site key from dash.cloudflare.com for production -->
+            <div style="margin-top: 14px;">
+                <div class="cf-turnstile"
+                     data-sitekey="1x00000000000000000000AA"
+                     data-callback="onTurnstileSuccess"
+                     data-expired-callback="onTurnstileExpired"
+                     data-theme="light">
+                </div>
+            </div>
 
             <div class="actions">
                 <button id="sendButton" disabled>→</button>

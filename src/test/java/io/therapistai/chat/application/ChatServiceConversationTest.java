@@ -63,7 +63,7 @@ class ChatServiceConversationTest {
     void newConversation_shouldGenerateConversationId_whenConversationIdIsNull() {
         when(callResponseSpec.content()).thenReturn("Hello, I'm here to help.");
 
-        ChatRequest request = new ChatRequest("Hello", null, null);
+        ChatRequest request = new ChatRequest("Hello", null, null, null);
         ChatResponse response = chatService.chat(request);
 
         assertNotNull(response.conversationId(), "conversationId must not be null");
@@ -75,7 +75,7 @@ class ChatServiceConversationTest {
     void newConversation_shouldGenerateConversationId_whenConversationIdIsBlank() {
         when(callResponseSpec.content()).thenReturn("Hello, I'm here to help.");
 
-        ChatRequest request = new ChatRequest("Hello", null, "   ");
+        ChatRequest request = new ChatRequest("Hello", null, "   ", null);
         ChatResponse response = chatService.chat(request);
 
         assertNotNull(response.conversationId());
@@ -86,12 +86,12 @@ class ChatServiceConversationTest {
     void existingConversation_shouldReuseConversationId() {
         when(callResponseSpec.content()).thenReturn("First reply", "Second reply");
 
-        ChatRequest firstRequest = new ChatRequest("How are you?", null, null);
+        ChatRequest firstRequest = new ChatRequest("How are you?", null, null, null);
         ChatResponse firstResponse = chatService.chat(firstRequest);
 
         String existingId = firstResponse.conversationId();
 
-        ChatRequest secondRequest = new ChatRequest("Tell me more.", null, existingId);
+        ChatRequest secondRequest = new ChatRequest("Tell me more.", null, existingId, null);
         ChatResponse secondResponse = chatService.chat(secondRequest);
 
         assertEquals(existingId, secondResponse.conversationId(),
@@ -102,8 +102,8 @@ class ChatServiceConversationTest {
     void differentRequests_withNoConversationId_shouldGetDifferentConversationIds() {
         when(callResponseSpec.content()).thenReturn("Reply A", "Reply B");
 
-        ChatResponse responseA = chatService.chat(new ChatRequest("Message A", null, null));
-        ChatResponse responseB = chatService.chat(new ChatRequest("Message B", null, null));
+        ChatResponse responseA = chatService.chat(new ChatRequest("Message A", null, null, null));
+        ChatResponse responseB = chatService.chat(new ChatRequest("Message B", null, null, null));
 
         assertNotEquals(responseA.conversationId(), responseB.conversationId(),
                 "Two independent requests should produce different conversationIds");
@@ -114,11 +114,11 @@ class ChatServiceConversationTest {
         when(callResponseSpec.content()).thenReturn("First reply", "Second reply");
 
         // First exchange — establishes history
-        ChatResponse firstResponse = chatService.chat(new ChatRequest("First message", null, null));
+        ChatResponse firstResponse = chatService.chat(new ChatRequest("First message", null, null, null));
         String conversationId = firstResponse.conversationId();
 
         // Second exchange — history must be included in the messages sent to ChatClient
-        chatService.chat(new ChatRequest("Second message", null, conversationId));
+        chatService.chat(new ChatRequest("Second message", null, conversationId, null));
 
         verify(requestSpec, times(2)).messages(messagesCaptor.capture());
         List<Message> secondCallMessages = messagesCaptor.getAllValues().get(1);
@@ -136,4 +136,3 @@ class ChatServiceConversationTest {
         assertEquals("Second message", secondCallMessages.get(3).getText(), "Current user message content must match");
     }
 }
-
