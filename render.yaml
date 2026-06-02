@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: therapist-ai
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: OPENAI_API_KEY
+        sync: false   # Set this manually in the Render dashboard
+

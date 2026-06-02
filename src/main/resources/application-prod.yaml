@@ -1,0 +1,15 @@
+# Production profile — active when SPRING_PROFILES_ACTIVE=prod
+spring:
+  docker:
+    compose:
+      enabled: false
+
+  # Database dependencies exist but are not used yet (RAG not implemented).
+  # Exclude datasource/JPA auto-configuration to allow the app to start
+  # without a database. Re-enable these when RAG is introduced.
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+
