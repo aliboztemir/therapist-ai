@@ -20,6 +20,8 @@ management:
 
 server:
   port: ${PORT:8080}
+  tomcat:
+    basedir: target/tomcat
 
 turnstile:
   # Leave blank for local dev — verification is skipped automatically.

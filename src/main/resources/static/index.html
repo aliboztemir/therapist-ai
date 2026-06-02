@@ -172,9 +172,9 @@
         <!-- Turnstile widget
              Local dev : test key below always renders and passes (backend skips verification when TURNSTILE_SECRET_KEY is blank)
              Production: replace data-sitekey with your real site key from dash.cloudflare.com -->
-        <div class="verification-row">
+        <div id="verificationRow" class="verification-row" style="display:none;">
             <div class="cf-turnstile"
-                 data-sitekey="0x4AAAAAADdkmRP5Yu4cBi1U"
+                 data-sitekey="1x00000000000000000000AA"
                  data-callback="onTurnstileSuccess"
                  data-expired-callback="onTurnstileExpired"
                  data-theme="light">
@@ -212,6 +212,26 @@
 
     let conversationId = null;
     let turnstileToken = null;
+
+    // Fetch config from backend to determine if Turnstile is required
+    async function fetchConfig() {
+        try {
+            const res = await fetch("/api/config");
+            const config = await res.json();
+            if (config.turnstileEnabled) {
+                document.getElementById("verificationRow").style.display = "flex";
+            } else {
+                // Dev mode: Turnstile secret key not configured — bypass widget entirely
+                turnstileToken = "dev-bypass";
+                updateButton();
+            }
+        } catch {
+            // If config fetch fails, fall back to requiring Turnstile
+            document.getElementById("verificationRow").style.display = "flex";
+        }
+    }
+
+    fetchConfig();
 
     function onTurnstileSuccess(token) {
         turnstileToken = token;
