@@ -7,8 +7,6 @@
     <title>TherapistAI</title>
     <link rel="icon" type="image/png" href="therapist-ai-home-page.png" />
 
-    <!-- Cloudflare Turnstile — replace data-sitekey with your real key for production -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <meta name="description" content="AI-powered psychotherapy-inspired conversational assistant." />
     <meta name="keywords" content="AI, RAG, chatbot, therapist, conversational assistant, Spring Boot" />
@@ -268,5 +266,7 @@
         }
     });
 </script>
+    <!-- Cloudflare Turnstile: loaded at end of body to avoid preload timing warnings -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
 </body>
 </html>
