@@ -77,9 +77,16 @@
         .char-counter.warn  { color: #f59e0b; }
         .char-counter.over  { color: #ef4444; font-weight: bold; }
 
+        .verification-row {
+          display: flex;
+          justify-content: center;
+          margin-top: 16px;
+        }
+
         .actions {
           display: flex;
           justify-content: flex-end;
+          align-items: center;
           margin-top: 12px;
         }
 
@@ -157,20 +164,20 @@
             <textarea id="message" placeholder="Type your message here..." maxlength="500"></textarea>
             <div id="charCounter" class="char-counter">0 / 500</div>
 
-            <!-- Turnstile widget
-                 Test site key (always passes): 1x00000000000000000000AA
-                 Replace with your real site key from dash.cloudflare.com for production -->
-            <div style="margin-top: 14px;">
-                <div class="cf-turnstile"
-                     data-sitekey="1x00000000000000000000AA"
-                     data-callback="onTurnstileSuccess"
-                     data-expired-callback="onTurnstileExpired"
-                     data-theme="light">
-                </div>
-            </div>
-
             <div class="actions">
                 <button id="sendButton" disabled>→</button>
+            </div>
+        </div>
+
+        <!-- Turnstile widget
+             Test site key (always passes): 1x00000000000000000000AA
+             Replace with your real site key from dash.cloudflare.com for production -->
+        <div class="verification-row">
+            <div class="cf-turnstile"
+                 data-sitekey="1x00000000000000000000AA"
+                 data-callback="onTurnstileSuccess"
+                 data-expired-callback="onTurnstileExpired"
+                 data-theme="light">
             </div>
         </div>
 
