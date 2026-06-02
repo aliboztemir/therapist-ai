@@ -7,7 +7,9 @@ public record ChatRequest(
         @NotBlank(message = "message must not be blank")
         String message,
 
-        String userId
+        String userId,
+
+        String conversationId
 
 ) {
 }
