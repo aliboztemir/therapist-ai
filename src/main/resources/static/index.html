@@ -170,11 +170,11 @@
         </div>
 
         <!-- Turnstile widget
-             Test site key (always passes): 1x00000000000000000000AA
-             Replace with your real site key from dash.cloudflare.com for production -->
+             Local dev : test key below always renders and passes (backend skips verification when TURNSTILE_SECRET_KEY is blank)
+             Production: replace data-sitekey with your real site key from dash.cloudflare.com -->
         <div class="verification-row">
             <div class="cf-turnstile"
-                 data-sitekey="REPLACE_WITH_TURNSTILE_SITE_KEY"
+                 data-sitekey="1x00000000000000000000AA"
                  data-callback="onTurnstileSuccess"
                  data-expired-callback="onTurnstileExpired"
                  data-theme="light">
