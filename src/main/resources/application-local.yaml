@@ -1,0 +1,8 @@
+# Local development profile
+# Overrides production values for local testing.
+# Activate with: --spring.profiles.active=local
+# or: -Dspring.profiles.active=local
+
+turnstile:
+  secret-key: ""
+
