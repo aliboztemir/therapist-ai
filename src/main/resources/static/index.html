@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>TherapistAI</title>
-    <link rel="icon" type="image/png" href="/therapist-ai-home-page.png" />
+    <link rel="icon" type="image/png" href="therapist-ai-home-page.png" />
+
+    <!-- Cloudflare Turnstile — replace data-sitekey with your real key for production -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
     <meta name="description" content="AI-powered psychotherapy-inspired conversational assistant." />
     <meta name="keywords" content="AI, RAG, chatbot, therapist, conversational assistant, Spring Boot" />
@@ -63,9 +66,27 @@
           box-sizing: border-box;
         }
 
+        .char-counter {
+          text-align: right;
+          font-size: 12px;
+          color: #9ca3af;
+          margin-top: 4px;
+          transition: color 0.2s;
+        }
+
+        .char-counter.warn  { color: #f59e0b; }
+        .char-counter.over  { color: #ef4444; font-weight: bold; }
+
+        .verification-row {
+          display: flex;
+          justify-content: center;
+          margin-top: 16px;
+        }
+
         .actions {
           display: flex;
           justify-content: flex-end;
+          align-items: center;
           margin-top: 12px;
         }
 
@@ -131,7 +152,7 @@
 <main class="page">
     <section class="container">
         <img
-            src="/therapist-ai-home-page.png"
+            src="therapist-ai-home-page.png"
             alt="TherapistAI"
             style="width: 180px; height: auto; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.10);"
         />
@@ -140,10 +161,23 @@
         <p class="subtitle">AI-powered psychotherapy-inspired conversational assistant</p>
 
         <div class="chat-box">
-            <textarea id="message" placeholder="Type your message here..."></textarea>
+            <textarea id="message" aria-label="Message" placeholder="Type your message here..." maxlength="500"></textarea>
+            <div id="charCounter" class="char-counter">0 / 500</div>
 
             <div class="actions">
                 <button id="sendButton" disabled>→</button>
+            </div>
+        </div>
+
+        <!-- Turnstile widget
+             Local dev : test key below always renders and passes (backend skips verification when TURNSTILE_SECRET_KEY is blank)
+             Production: replace data-sitekey with your real site key from dash.cloudflare.com -->
+        <div class="verification-row">
+            <div class="cf-turnstile"
+                 data-sitekey="0x4AAAAAADdkmRP5Yu4cBi1U"
+                 data-callback="onTurnstileSuccess"
+                 data-expired-callback="onTurnstileExpired"
+                 data-theme="light">
             </div>
         </div>
 
@@ -169,54 +203,69 @@
 </main>
 
 <script>
-    const textarea = document.getElementById("message");
-    const button = document.getElementById("sendButton");
+    const textarea    = document.getElementById("message");
+    const button      = document.getElementById("sendButton");
     const responseBox = document.getElementById("response");
+    const charCounter = document.getElementById("charCounter");
+
+    const MAX_LENGTH = 500;
 
     let conversationId = null;
+    let turnstileToken = null;
 
-    textarea.addEventListener("input", () => {
-      button.disabled = textarea.value.trim().length === 0;
-    });
+    function onTurnstileSuccess(token) {
+        turnstileToken = token;
+        updateButton();
+    }
+
+    function onTurnstileExpired() {
+        turnstileToken = null;
+        updateButton();
+    }
+
+    function updateButton() {
+        const len  = textarea.value.length;
+        const over = len > MAX_LENGTH;
+
+        charCounter.textContent = `${len} / ${MAX_LENGTH}`;
+        charCounter.className   = over              ? "char-counter over"
+                                : len >= MAX_LENGTH * 0.9 ? "char-counter warn"
+                                : "char-counter";
+
+        button.disabled = textarea.value.trim().length === 0 || over || !turnstileToken;
+    }
+
+    textarea.addEventListener("input", updateButton);
 
     button.addEventListener("click", async () => {
-      const message = textarea.value.trim();
+        const message = textarea.value.trim();
+        if (!message || message.length > MAX_LENGTH || !turnstileToken) return;
 
-      if (!message) {
-        return;
-      }
+        button.disabled = true;
+        responseBox.style.display = "block";
+        responseBox.textContent = "Thinking...";
 
-      button.disabled = true;
-      responseBox.style.display = "block";
-      responseBox.textContent = "Thinking...";
+        try {
+            const requestBody = { message, conversationId, turnstileToken };
 
-      try {
-        const requestBody = {
-          message,
-          conversationId
-        };
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestBody)
+            });
 
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(requestBody)
-        });
+            if (!res.ok) throw new Error("Request failed");
 
-        if (!res.ok) {
-          throw new Error("Request failed");
+            const data = await res.json();
+            conversationId = data.conversationId || conversationId;
+            responseBox.textContent = data.answer || "No response received.";
+        } catch (error) {
+            responseBox.textContent = "Something went wrong. Please try again.";
+        } finally {
+            if (window.turnstile) turnstile.reset();
+            turnstileToken = null;
+            updateButton();
         }
-
-        const data = await res.json();
-
-        conversationId = data.conversationId || conversationId;
-        responseBox.textContent = data.answer || "No response received.";
-      } catch (error) {
-        responseBox.textContent = "Something went wrong. Please try again.";
-      } finally {
-        button.disabled = textarea.value.trim().length === 0;
-      }
     });
 </script>
 </body>

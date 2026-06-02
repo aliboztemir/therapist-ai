@@ -8,3 +8,5 @@ services:
     envVars:
       - key: OPENAI_API_KEY
         sync: false
+      - key: TURNSTILE_SECRET_KEY
+        sync: false   # Get this from Cloudflare Turnstile dashboard

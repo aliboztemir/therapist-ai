@@ -1,5 +1,6 @@
 package io.therapistai.exception;
 
+import io.therapistai.security.turnstile.TurnstileVerificationException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,22 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(TurnstileVerificationException.class)
+    public ResponseEntity<ErrorResponse> handleTurnstileException(
+            TurnstileVerificationException exception,
+            HttpServletRequest request) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(
+                        Instant.now(),
+                        HttpStatus.FORBIDDEN.value(),
+                        HttpStatus.FORBIDDEN.getReasonPhrase(),
+                        List.of("Turnstile verification failed."),
+                        request.getRequestURI()
+                ));
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(

@@ -11,5 +11,7 @@ public interface DocumentRepository {
     Optional<Document> findById(UUID id);
 
     List<Document> findAll();
+
+    void delete(UUID id);
 }
 
