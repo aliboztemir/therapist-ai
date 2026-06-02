@@ -14,10 +14,7 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.core.io.Resource;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +37,7 @@ class ChatServiceConversationTest {
     private ChatClient.CallResponseSpec callResponseSpec;
 
     @Mock
-    private Resource systemPromptResource;
+    private PromptComposer promptComposer;
 
     @Captor
     private ArgumentCaptor<List<Message>> messagesCaptor;
@@ -48,15 +45,14 @@ class ChatServiceConversationTest {
     private ChatService chatService;
 
     @BeforeEach
-    void setUp() throws IOException {
-        when(systemPromptResource.getContentAsString(StandardCharsets.UTF_8))
-                .thenReturn("You are a therapist assistant.");
+    void setUp() {
+        when(promptComposer.systemPrompt()).thenReturn("You are a therapist assistant.");
         when(chatClientBuilder.build()).thenReturn(chatClient);
         when(chatClient.prompt()).thenReturn(requestSpec);
         when(requestSpec.messages(any(java.util.List.class))).thenReturn(requestSpec);
         when(requestSpec.call()).thenReturn(callResponseSpec);
 
-        chatService = new ChatService(chatClientBuilder, systemPromptResource);
+        chatService = new ChatService(chatClientBuilder, promptComposer);
     }
 
     @Test

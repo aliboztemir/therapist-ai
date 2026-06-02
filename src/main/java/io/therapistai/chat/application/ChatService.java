@@ -9,12 +9,8 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,15 +21,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChatService {
 
     private final ChatClient chatClient;
-    private final String systemPrompt;
+    private final PromptComposer promptComposer;
     private final Map<String, Conversation> conversations = new ConcurrentHashMap<>();
 
-    public ChatService(
-            ChatClient.Builder chatClientBuilder,
-            @Value("classpath:prompts/therapist-system-prompt.txt") Resource systemPromptResource
-    ) throws IOException {
+    public ChatService(ChatClient.Builder chatClientBuilder, PromptComposer promptComposer) {
         this.chatClient = chatClientBuilder.build();
-        this.systemPrompt = systemPromptResource.getContentAsString(StandardCharsets.UTF_8);
+        this.promptComposer = promptComposer;
     }
 
     public ChatResponse chat(ChatRequest request) {
@@ -59,7 +52,7 @@ public class ChatService {
 
     private List<Message> buildMessages(Conversation conversation, String currentUserMessage) {
         List<Message> messages = new ArrayList<>();
-        messages.add(new SystemMessage(systemPrompt));
+        messages.add(new SystemMessage(promptComposer.systemPrompt()));
 
         for (ChatMessage msg : conversation.getMessages()) {
             if (msg.role() == ChatMessage.Role.USER) {
