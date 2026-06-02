@@ -9,7 +9,6 @@ import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,7 +41,6 @@ public class ChatService {
 
         String assistantReply = chatClient.prompt()
                 .messages(messages)
-                .options(OpenAiChatOptions.builder().maxTokens(300))
                 .call()
                 .content();
 
