@@ -10,3 +10,9 @@ services:
         sync: false
       - key: TURNSTILE_SECRET_KEY
         sync: false   # Get this from Cloudflare Turnstile dashboard
+      - key: SPRING_DATASOURCE_URL
+        sync: false   # PostgreSQL JDBC URL, e.g. jdbc:postgresql://host:5432/db
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false

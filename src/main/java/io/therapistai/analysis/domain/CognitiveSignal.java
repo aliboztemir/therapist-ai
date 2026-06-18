@@ -1,0 +1,26 @@
+package io.therapistai.analysis.domain;
+
+public enum CognitiveSignal {
+
+    NEGATIVE_SELF_EVALUATION,
+
+    SELF_BLAME,
+
+    FEAR_OF_FAILURE,
+
+    PERFECTIONISM,
+
+    CATASTROPHIZING,
+
+    OVERGENERALIZATION,
+
+    ALL_OR_NOTHING_THINKING,
+
+    FORTUNE_TELLING,
+
+    MIND_READING,
+
+    RUMINATION,
+
+    HELPLESSNESS
+}

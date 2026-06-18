@@ -1,0 +1,284 @@
+﻿<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>TherapistAI — Create Account</title>
+    <link rel="icon" type="image/png" href="/therapist-ai-home-page.png"/>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f8fafc, #e5e7eb);
+            color: #111827;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        img {
+            width: 80px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0 0 6px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type=text], input[type=password], input[type=email] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+        }
+
+        button[type=submit] {
+            width: 100%;
+            padding: 11px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: background 0.15s;
+        }
+
+        button[type=submit]:hover {
+            background: #1d4ed8;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .footer a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .hint {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        input.invalid {
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <img src="/therapist-ai-home-page.png" alt="TherapistAI"/>
+    <h1>TherapistAI</h1>
+    <p class="subtitle">Create your account</p>
+    <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+    <form th:action="@{/register}" method="post">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" autocomplete="username"
+                   minlength="3" maxlength="30" required autofocus
+                   pattern="^[a-zA-Z0-9](?:[a-zA-Z0-9._\-]{1,28}[a-zA-Z0-9])?$"/>
+            <p class="hint">3–30 characters. Letters, numbers, dot, underscore, hyphen. Must start and end with a letter
+                or number.</p>
+        </div>
+        <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" name="fullName" autocomplete="name"
+                   minlength="2" maxlength="100" required/>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email"
+                   maxlength="254" required/>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="new-password"
+                   minlength="8" maxlength="72" required/>
+            <p class="hint">8–72 characters, at least one letter and one number.</p>
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword"
+                   autocomplete="new-password" minlength="8" maxlength="72" required/>
+        </div>
+        <button type="submit">Create account</button>
+    </form>
+    <div class="footer">
+        Already have an account? <a href="/login">Sign in</a>
+    </div>
+</div>
+<script>
+    (function () {
+        var USERNAME_RE = /^[a-zA-Z0-9](?:[a-zA-Z0-9._\-]{1,28}[a-zA-Z0-9])?$/;
+        var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        var usernameEl = document.getElementById('username');
+        var fullNameEl = document.getElementById('fullName');
+        var emailEl = document.getElementById('email');
+        var passwordEl = document.getElementById('password');
+        var confirmEl = document.getElementById('confirmPassword');
+        var form = document.querySelector('form');
+
+        function mark(el, ok) {
+            el.classList.toggle('invalid', !ok);
+        }
+
+        usernameEl.addEventListener('blur', function () {
+            var v = usernameEl.value.trim();
+            mark(usernameEl, v.length >= 3 && v.length <= 30 && USERNAME_RE.test(v));
+        });
+
+        fullNameEl.addEventListener('blur', function () {
+            var v = fullNameEl.value.trim();
+            mark(fullNameEl, v.length >= 2 && v.length <= 100);
+        });
+
+        emailEl.addEventListener('blur', function () {
+            var v = emailEl.value.trim();
+            mark(emailEl, v.length > 0 && v.length <= 254 && EMAIL_RE.test(v));
+        });
+
+        passwordEl.addEventListener('blur', function () {
+            var v = passwordEl.value;
+            var ok = v.length >= 8 && v.length <= 72 && /[A-Za-z]/.test(v) && /\d/.test(v);
+            mark(passwordEl, ok);
+            if (confirmEl.value) mark(confirmEl, confirmEl.value === v);
+        });
+
+        confirmEl.addEventListener('input', function () {
+            mark(confirmEl, confirmEl.value === passwordEl.value);
+        });
+
+        form.addEventListener('submit', function (e) {
+            var errors = [];
+            var u = usernameEl.value.trim();
+            var fn = fullNameEl.value.trim();
+            var em = emailEl.value.trim();
+            var p = passwordEl.value;
+            var c = confirmEl.value;
+
+            if (!u) {
+                errors.push('Username is required.');
+                mark(usernameEl, false);
+            } else if (u.length < 3 || u.length > 30 || !USERNAME_RE.test(u)) {
+                errors.push('Username must be 3–30 characters, letters/numbers/dot/underscore/hyphen, starting and ending with a letter or number.');
+                mark(usernameEl, false);
+            }
+
+            if (!fn) {
+                errors.push('Full name is required.');
+                mark(fullNameEl, false);
+            } else if (fn.length < 2 || fn.length > 100) {
+                errors.push('Full name must be between 2 and 100 characters.');
+                mark(fullNameEl, false);
+            }
+
+            if (!em) {
+                errors.push('Email is required.');
+                mark(emailEl, false);
+            } else if (!EMAIL_RE.test(em) || em.length > 254) {
+                errors.push('Please enter a valid email address.');
+                mark(emailEl, false);
+            }
+
+            if (!p) {
+                errors.push('Password is required.');
+                mark(passwordEl, false);
+            } else if (p.length < 8 || p.length > 72) {
+                errors.push('Password must be between 8 and 72 characters.');
+                mark(passwordEl, false);
+            } else if (!/[A-Za-z]/.test(p)) {
+                errors.push('Password must contain at least one letter.');
+                mark(passwordEl, false);
+            } else if (!/\d/.test(p)) {
+                errors.push('Password must contain at least one number.');
+                mark(passwordEl, false);
+            }
+
+            if (!c) {
+                errors.push('Confirm password is required.');
+                mark(confirmEl, false);
+            } else if (p && p !== c) {
+                errors.push('Passwords do not match.');
+                mark(confirmEl, false);
+            }
+
+            if (errors.length > 0) {
+                e.preventDefault();
+                var errDiv = document.querySelector('.alert-error');
+                if (!errDiv) {
+                    errDiv = document.createElement('div');
+                    errDiv.className = 'alert-error';
+                    form.parentNode.insertBefore(errDiv, form);
+                }
+                errDiv.textContent = errors[0];
+            }
+        });
+    }());
+</script>
+</body>
+</html>

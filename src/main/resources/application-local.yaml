@@ -1,0 +1,28 @@
+# Local development profile
+# Overrides production values for local testing.
+# Activate with: --spring.profiles.active=local
+# or: -Dspring.profiles.active=local
+
+turnstile:
+  secret-key: ""
+
+logging:
+  level:
+    io.therapistai: DEBUG
+    io.therapistai.chatS: DEBUG
+    io.therapistai.json: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+
+therapistai:
+  logging:
+    structured-json-enabled: true
+    full-json-enabled: true
+    full-json-local-only: true
+    max-json-chars: 20000
+    log-full-prompt: true
+    log-full-ai-response: true
+    log-full-memory: true
+    log-full-knowledge: true
+
