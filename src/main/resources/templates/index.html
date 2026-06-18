@@ -1,0 +1,1263 @@
+﻿<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>TherapistAI</title>
+    <link rel="icon" type="image/png" href="therapist-ai-home-page.png"/>
+
+    <meta name="description" content="AI-powered psychotherapy-inspired conversational assistant."/>
+    <meta name="keywords" content="AI, RAG, chatbot, therapist, conversational assistant, Spring Boot"/>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f8fafc, #e5e7eb);
+            color: #111827;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            font-family: inherit;
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 14px;
+            right: 20px;
+            z-index: 1000;
+
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-menu-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 8px 12px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: white;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+        }
+
+        .username {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .user-dropdown {
+            display: none;
+
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+
+            min-width: 180px;
+
+            background: white;
+            border-radius: 12px;
+
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+
+            overflow: hidden;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-dropdown a,
+        .user-dropdown button {
+            width: 100%;
+
+            display: block;
+
+            padding: 12px 16px;
+
+            background: white;
+            border: none;
+
+            text-align: left;
+            text-decoration: none;
+            color: #111827;
+
+            cursor: pointer;
+        }
+
+        .user-dropdown a:hover,
+        .user-dropdown button:hover {
+            background: #f3f4f6;
+        }
+
+        .app-shell {
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 18px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            height: 100vh;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 4px 10px;
+        }
+
+        .sidebar-logo {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        #sidebarNewConversationButton {
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            border-radius: 10px;
+            padding: 11px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        #sidebarNewConversationButton:hover {
+            background: #1d4ed8;
+        }
+
+        .conversation-list-title {
+            font-size: 12px;
+            color: #6b7280;
+            padding: 4px 4px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .conversation-list {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .conversation-item {
+            width: 100%;
+            background: transparent;
+            color: #374151;
+            border-radius: 9px;
+            padding: 10px;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .conversation-item:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .conversation-item.active {
+            background: #e0ecff;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+
+        .conversation-empty,
+        .conversation-error {
+            color: #9ca3af;
+            font-size: 13px;
+            padding: 8px 4px;
+            line-height: 1.4;
+        }
+
+        .conversation-error {
+            color: #991b1b;
+        }
+
+        .page {
+            height: 100vh;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 860px;
+            height: 100%;
+            min-height: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-logo {
+            width: 150px;
+            height: auto;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+        }
+
+        h1 {
+            font-size: 44px;
+            margin: 0 0 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 24px;
+            font-size: 16px;
+        }
+
+        .chat-window {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        body.conversation-started .hero-logo,
+        body.conversation-started h1,
+        body.conversation-started .subtitle,
+        body.conversation-started .project-note,
+        body.conversation-started .footer-links,
+        body.conversation-started .disclaimer {
+            display: none;
+        }
+
+        body.conversation-started .chat-window {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .chat-history {
+            flex: 1;
+            min-height: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 420px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        body.conversation-started .chat-history {
+            height: auto;
+        }
+
+        .chat-history:empty::before {
+            content: "Start a new conversation...";
+            color: #d1d5db;
+            font-size: 15px;
+            align-self: center;
+            margin: auto;
+        }
+
+        .bubble {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.6;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .bubble-user {
+            background: #2563eb;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bubble-ai {
+            background: #f3f4f6;
+            color: #111827;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .bubble-error {
+            background: #fee2e2;
+            color: #991b1b;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .bubble-typing {
+            background: #f3f4f6;
+            color: #6b7280;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            font-style: italic;
+        }
+
+        .chat-divider {
+            height: 1px;
+            background: #e5e7eb;
+            margin: 0;
+        }
+
+        .chat-input-area {
+            flex-shrink: 0;
+            padding: 16px 20px 12px;
+            background: #ffffff;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            border: none;
+            outline: none;
+            resize: none;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+            transition: color 0.2s;
+        }
+
+        .char-counter.warn {
+            color: #f59e0b;
+        }
+
+        .char-counter.over {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        #sendButton {
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            background: #2563eb;
+            color: white;
+            font-size: 22px;
+        }
+
+        #sendButton:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+
+        #sendButton:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .verification-row {
+            display: flex;
+            justify-content: center;
+            margin-top: 14px;
+        }
+
+        .project-note {
+            margin-top: 24px;
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .footer-links {
+            margin-top: 14px;
+            font-size: 13px;
+        }
+
+        .footer-links a {
+            color: #2563eb;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .disclaimer {
+            margin-top: 18px;
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .consent-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+
+        .consent-overlay.hidden {
+            display: none;
+        }
+
+        .consent-modal {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            max-width: 600px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+
+        .consent-header {
+            padding: 24px 28px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .consent-header h2 {
+            margin: 0 0 4px;
+            font-size: 20px;
+            color: #111827;
+        }
+
+        .consent-header p {
+            margin: 0;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .consent-body {
+            padding: 20px 28px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #374151;
+        }
+
+        .consent-body h3 {
+            margin-top: 16px;
+            margin-bottom: 6px;
+            font-size: 15px;
+            color: #111827;
+        }
+
+        .consent-body ul {
+            margin: 6px 0 6px 20px;
+            padding: 0;
+        }
+
+        .consent-body ul li {
+            margin-bottom: 4px;
+        }
+
+        .consent-footer {
+            padding: 16px 28px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .consent-checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .consent-checkbox-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .consent-checkbox-row label {
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            line-height: 1.5;
+        }
+
+        #consentAcceptBtn {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        #consentAcceptBtn:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+
+        #consentAcceptBtn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .consent-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                height: auto;
+                max-height: 260px;
+                min-height: 0;
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .conversation-list {
+                max-height: 180px;
+                overflow-y: auto;
+            }
+
+            .page {
+                padding: 24px 16px;
+            }
+
+            .top-bar {
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="consentOverlay" class="consent-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="consentTitle">
+    <div class="consent-modal">
+        <div class="consent-header">
+            <h2 id="consentTitle">&#9888;&#65039; Terms of Use &amp; Informed Consent</h2>
+            <p>Please read carefully before using TherapistAI.</p>
+        </div>
+
+        <div class="consent-body">
+            <h3>1. Nature of the Service</h3>
+            <p>
+                TherapistAI is an <strong>experimental, AI-powered conversational assistant</strong>
+                developed as a university graduation thesis project. It is <strong>not</strong> a
+                medical, psychological, psychiatric, or therapeutic service and must not be used
+                as a substitute for professional mental health care.
+            </p>
+
+            <h3>2. No Professional Relationship</h3>
+            <p>
+                Interacting with TherapistAI does not create a therapist&ndash;client, doctor&ndash;patient,
+                or any other professional relationship. The information provided is for
+                informational and research purposes only.
+            </p>
+
+            <h3>3. Crisis &amp; Emergency Situations</h3>
+            <p>
+                If you are experiencing a mental health crisis, thoughts of suicide or self-harm,
+                or any other emergency, <strong>do not use this application</strong>. Instead,
+                please contact:
+            </p>
+            <ul>
+                <li>Emergency services: <strong>112</strong> (EU) / <strong>911</strong> (US)</li>
+                <li>Crisis hotlines in your country</li>
+                <li>A licensed mental health professional</li>
+            </ul>
+
+            <h3>4. Data &amp; Privacy</h3>
+            <p>
+                Conversation data may be stored to provide context-aware responses.
+                Do <strong>not</strong> share sensitive personal information such as ID numbers or financial data.
+            </p>
+
+            <h3>5. Limitations &amp; Accuracy</h3>
+            <p>
+                AI responses may be inaccurate, incomplete, or inappropriate for your situation.
+                Always verify important information with a qualified professional.
+            </p>
+
+            <h3>6. Voluntary Use</h3>
+            <p>
+                Use of this service is voluntary. You may stop at any time by closing the page
+                or starting a new conversation.
+            </p>
+        </div>
+
+        <div class="consent-footer">
+            <div class="consent-checkbox-row">
+                <input type="checkbox" id="consentCheckbox"/>
+                <label for="consentCheckbox">
+                    I have read and understood the terms above. I acknowledge that TherapistAI is
+                    <strong>not</strong> a medical service, and I accept full responsibility for
+                    how I use this application.
+                </label>
+            </div>
+            <button id="consentAcceptBtn" disabled>Accept &amp; Continue</button>
+        </div>
+    </div>
+</div>
+
+<header class="top-bar">
+
+    <div class="user-menu">
+
+        <button
+                id="userMenuButton"
+                class="user-menu-button"
+                type="button">
+
+            <div class="avatar"
+                 th:text="${
+                    user.fullName != null &&
+                    !#strings.isEmpty(user.fullName)
+                    ? #strings.substring(user.fullName,0,1)
+                    : #strings.substring(user.username,0,1)
+                 }">
+                A
+            </div>
+
+            <span class="username"
+                  th:text="${user.username}">
+                username
+            </span>
+
+            <span class="dropdown-arrow">▼</span>
+
+        </button>
+
+        <div id="userDropdown" class="user-dropdown">
+
+            <a th:href="@{/profile}">
+                Profile
+            </a>
+
+            <form th:action="@{/logout}" method="post">
+                <button
+                        type="submit"
+                        class="dropdown-signout">
+                    Sign out
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
+</header>
+
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="therapist-ai-home-page.png" alt="TherapistAI" class="sidebar-logo"/>
+            <div>
+                <div class="sidebar-title">TherapistAI</div>
+                <div class="sidebar-subtitle">Conversation history</div>
+            </div>
+        </div>
+
+        <button id="sidebarNewConversationButton">+ New Chat</button>
+
+        <div class="conversation-list-title">Previous chats</div>
+        <div id="conversationList" class="conversation-list">
+            <div class="conversation-empty">No conversations yet.</div>
+        </div>
+    </aside>
+
+    <main class="page">
+        <section class="container">
+            <img src="therapist-ai-home-page.png" alt="TherapistAI" class="hero-logo"/>
+
+            <h1>TherapistAI</h1>
+            <p class="subtitle">AI-powered psychotherapy-inspired conversational assistant</p>
+
+            <div class="chat-window">
+                <div id="chatHistory" class="chat-history"></div>
+
+                <div class="chat-divider"></div>
+
+                <div class="chat-input-area">
+                    <textarea id="message" aria-label="Message" placeholder="Type your message here..."
+                              maxlength="500"></textarea>
+                    <div id="charCounter" class="char-counter">0 / 500</div>
+                    <div class="actions">
+                        <button id="sendButton" disabled>&#x2192;</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="verificationRow" class="verification-row" style="display:none;">
+                <div class="cf-turnstile"
+                     data-sitekey="1x00000000000000000000AA"
+                     data-callback="onTurnstileSuccess"
+                     data-expired-callback="onTurnstileExpired"
+                     data-theme="light">
+                </div>
+            </div>
+
+            <div class="project-note">
+                Originally developed as a university graduation thesis project at
+                Y&#305;ld&#305;z Technical University, Computer Engineering.
+            </div>
+
+            <div class="footer-links">
+                <a href="https://github.com/aliboztemir" target="_blank">GitHub</a>
+                <a href="https://www.linkedin.com/in/ali-boztemir" target="_blank">LinkedIn</a>
+                <a href="https://aliboztemir.com" target="_blank">Website</a>
+                <a href="https://github.com/aliboztemir/therapist-ai" target="_blank">Repository</a>
+            </div>
+
+            <div class="disclaimer">
+                This project is for NLP/RAG experimentation only.
+                It is not a medical, psychological, psychiatric, or therapeutic service.
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    const textarea = document.getElementById("message");
+    const button = document.getElementById("sendButton");
+    const sidebarNewConvBtn = document.getElementById("sidebarNewConversationButton");
+    const charCounter = document.getElementById("charCounter");
+    const chatHistory = document.getElementById("chatHistory");
+    const conversationList = document.getElementById("conversationList");
+
+    const consentOverlay = document.getElementById("consentOverlay");
+    const consentCheckbox = document.getElementById("consentCheckbox");
+    const consentAcceptBtn = document.getElementById("consentAcceptBtn");
+
+    const MAX_LENGTH = 500;
+
+    let conversationId = null;
+    let turnstileToken = null;
+    let consentGiven = false;
+    let conversations = [];
+
+    function csrfHeader() {
+        return document.querySelector('meta[name="_csrf_header"]').content;
+    }
+
+    function csrfToken() {
+        return document.querySelector('meta[name="_csrf"]').content;
+    }
+
+    function showConsentModal() {
+        consentOverlay.classList.remove("hidden");
+        consentCheckbox.checked = false;
+        consentAcceptBtn.disabled = true;
+        consentAcceptBtn.innerHTML = "Accept &amp; Continue";
+        document.body.style.overflow = "hidden";
+    }
+
+    function hideConsentModal() {
+        consentOverlay.classList.add("hidden");
+        document.body.style.overflow = "";
+    }
+
+    consentCheckbox.addEventListener("change", () => {
+        consentAcceptBtn.disabled = !consentCheckbox.checked;
+    });
+
+    consentAcceptBtn.addEventListener("click", async () => {
+        consentAcceptBtn.disabled = true;
+        consentAcceptBtn.innerHTML = '<span class="consent-spinner"></span>Accepting...';
+
+        try {
+            const res = await fetch("/api/consent/accept", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    [csrfHeader()]: csrfToken()
+                }
+            });
+
+            if (res.ok) {
+                consentGiven = true;
+                hideConsentModal();
+                updateButton();
+            } else {
+                consentAcceptBtn.innerHTML = "Accept &amp; Continue";
+                consentAcceptBtn.disabled = false;
+                alert("Failed to save your consent. Please try again.");
+            }
+        } catch {
+            consentAcceptBtn.innerHTML = "Accept &amp; Continue";
+            consentAcceptBtn.disabled = false;
+            alert("Network error. Please check your connection and try again.");
+        }
+    });
+
+    async function checkConsentStatus() {
+        try {
+            const res = await fetch("/api/consent/status");
+
+            if (!res.ok) {
+                showConsentModal();
+                return;
+            }
+
+            const data = await res.json();
+            consentGiven = data.consentGiven === true;
+
+            if (!consentGiven) {
+                showConsentModal();
+            }
+        } catch {
+            showConsentModal();
+        }
+    }
+
+    async function fetchConfig() {
+        try {
+            const res = await fetch("/api/config");
+            const config = await res.json();
+
+            if (config.turnstileEnabled) {
+                document.getElementById("verificationRow").style.display = "flex";
+            } else {
+                turnstileToken = "dev-bypass";
+                updateButton();
+            }
+        } catch {
+            document.getElementById("verificationRow").style.display = "flex";
+        }
+    }
+
+    function onTurnstileSuccess(token) {
+        turnstileToken = token;
+        updateButton();
+    }
+
+    function onTurnstileExpired() {
+        turnstileToken = null;
+        updateButton();
+    }
+
+    function updateButton() {
+        const len = textarea.value.length;
+        const over = len > MAX_LENGTH;
+
+        charCounter.textContent = `${len} / ${MAX_LENGTH}`;
+        charCounter.className = over
+            ? "char-counter over"
+            : len >= MAX_LENGTH * 0.9
+                ? "char-counter warn"
+                : "char-counter";
+
+        button.disabled = textarea.value.trim().length === 0
+            || over
+            || !turnstileToken
+            || !consentGiven;
+    }
+
+    textarea.addEventListener("input", updateButton);
+
+    textarea.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+
+            if (!button.disabled) {
+                button.click();
+            }
+        }
+    });
+
+    function markConversationStarted() {
+        document.body.classList.add("conversation-started");
+    }
+
+    function markConversationEmpty() {
+        document.body.classList.remove("conversation-started");
+    }
+
+    function appendBubble(text, type) {
+        markConversationStarted();
+
+        const div = document.createElement("div");
+        div.className = `bubble bubble-${type}`;
+        div.textContent = text;
+        chatHistory.appendChild(div);
+        scrollChatToBottom();
+        return div;
+    }
+
+    function scrollChatToBottom() {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    function startNewConversation() {
+        conversationId = null;
+        chatHistory.innerHTML = "";
+        textarea.value = "";
+        updateButton();
+        markActiveConversation(null);
+        markConversationEmpty();
+    }
+
+    sidebarNewConvBtn.addEventListener("click", startNewConversation);
+
+    async function loadConversations() {
+        try {
+            const res = await fetch("/api/conversations");
+
+            if (!res.ok) {
+                renderConversationError();
+                return;
+            }
+
+            conversations = await res.json();
+            renderConversationList();
+        } catch {
+            renderConversationError();
+        }
+    }
+
+    function renderConversationList() {
+        conversationList.innerHTML = "";
+
+        if (!conversations || conversations.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "conversation-empty";
+            empty.textContent = "No conversations yet.";
+            conversationList.appendChild(empty);
+            return;
+        }
+
+        conversations.forEach(conversation => {
+            const item = document.createElement("button");
+            item.type = "button";
+            item.className = "conversation-item";
+            item.dataset.conversationId = conversation.id;
+            item.textContent = formatConversationTitle(conversation);
+            item.addEventListener("click", () => openConversation(conversation.id));
+            conversationList.appendChild(item);
+        });
+
+        markActiveConversation(conversationId);
+    }
+
+    function renderConversationError() {
+        conversationList.innerHTML = "";
+        const error = document.createElement("div");
+        error.className = "conversation-error";
+        error.textContent = "Could not load conversations.";
+        conversationList.appendChild(error);
+    }
+
+    function formatConversationTitle(conversation) {
+        const value = conversation.updatedAt || conversation.createdAt;
+
+        if (!value) {
+            return "Conversation";
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return "Conversation";
+        }
+
+        return `Conversation - ${date.toLocaleString()}`;
+    }
+
+    function markActiveConversation(activeId) {
+        document
+            .querySelectorAll(".conversation-item")
+            .forEach(item => {
+                item.classList.toggle(
+                    "active",
+                    activeId !== null && item.dataset.conversationId === activeId
+                );
+            });
+    }
+
+    async function openConversation(id) {
+        try {
+            const res = await fetch(`/api/conversations/${id}/messages`);
+
+            if (!res.ok) {
+                const errorMessage = await extractErrorMessage(
+                    res,
+                    "Could not load this conversation."
+                );
+
+                appendBubble(errorMessage, "error");
+                return;
+            }
+
+            const data = await res.json();
+
+            conversationId = data.conversationId;
+            chatHistory.innerHTML = "";
+
+            if (data.messages && data.messages.length > 0) {
+                markConversationStarted();
+            } else {
+                markConversationEmpty();
+            }
+
+            if (!data.messages || data.messages.length === 0) {
+                appendBubble("This conversation has no messages yet.", "error");
+                markActiveConversation(conversationId);
+                return;
+            }
+
+            data.messages.forEach(message => {
+                if (!message || !message.content) {
+                    return;
+                }
+
+                appendBubble(
+                    message.content,
+                    message.role === "USER" ? "user" : "ai"
+                );
+            });
+
+            markActiveConversation(conversationId);
+        } catch {
+            appendBubble("Could not load this conversation.", "error");
+        }
+    }
+
+    async function extractErrorMessage(response, fallbackMessage) {
+        try {
+            const body = await response.json();
+
+            if (Array.isArray(body?.messages) && body.messages.length > 0) {
+                return body.messages[0];
+            }
+
+            if (typeof body?.message === "string" && body.message.trim()) {
+                return body.message;
+            }
+
+            if (typeof body?.error === "string" && body.error.trim()) {
+                return body.error;
+            }
+
+            return fallbackMessage;
+        } catch {
+            return fallbackMessage;
+        }
+    }
+
+    button.addEventListener("click", async () => {
+        const message = textarea.value.trim();
+
+        if (!message || message.length > MAX_LENGTH || !turnstileToken) {
+            return;
+        }
+
+        if (!consentGiven) {
+            showConsentModal();
+            return;
+        }
+
+        const userBubble = appendBubble(message, "user");
+        textarea.value = "";
+        updateButton();
+
+        const typingBubble = appendBubble("Thinking...", "typing");
+        button.disabled = true;
+
+        try {
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    [csrfHeader()]: csrfToken()
+                },
+                body: JSON.stringify({
+                    message,
+                    conversationId,
+                    turnstileToken
+                })
+            });
+
+            typingBubble.remove();
+
+            if (res.status === 403) {
+                consentGiven = false;
+                showConsentModal();
+                return;
+            }
+
+            if (!res.ok) {
+                const errorMessage = await extractErrorMessage(
+                    res,
+                    "Something went wrong. Please try again."
+                );
+
+                if (userBubble && userBubble.parentNode) {
+                    userBubble.remove();
+                }
+
+                appendBubble(errorMessage, "error");
+                return;
+            }
+
+            const data = await res.json();
+
+            conversationId = data.conversationId || null;
+            appendBubble(data.answer || "No response received.", "ai");
+
+            await loadConversations();
+            markActiveConversation(conversationId);
+
+        } catch {
+            if (typingBubble.parentNode) {
+                typingBubble.remove();
+            }
+
+            if (userBubble && userBubble.parentNode) {
+                userBubble.remove();
+            }
+
+            appendBubble("Something went wrong. Please try again.", "error");
+        } finally {
+            if (window.turnstile) {
+                turnstile.reset();
+            }
+
+            turnstileToken = null;
+            updateButton();
+        }
+    });
+
+    const userButton =
+        document.getElementById("userMenuButton");
+
+    const dropdown =
+        document.getElementById("userDropdown");
+
+    userButton.addEventListener("click", () => {
+        dropdown.classList.toggle("show");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!userButton.contains(e.target)
+            && !dropdown.contains(e.target)) {
+
+            dropdown.classList.remove("show");
+        }
+    });
+
+    Promise.all([
+        checkConsentStatus(),
+        fetchConfig(),
+        loadConversations()
+    ]);
+</script>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+</body>
+</html>

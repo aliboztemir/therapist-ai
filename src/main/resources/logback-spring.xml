@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- ── Properties ──────────────────────────────────────────────────── -->
+    <property name="LOG_DIR" value="logs"/>
+    <property name="LOG_FILE" value="${LOG_DIR}/therapist-ai"/>
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <!-- ── Console appender ────────────────────────────────────────────── -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ── Rolling file appender (INFO+, always active) ───────────────── -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ── Debug file appender (always declared, only attached in local) ─ -->
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/therapist-ai-debug.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/therapist-ai-debug.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ── Suppress noisy libraries globally ──────────────────────────── -->
+    <!-- Hibernate internals — SQL binding and transaction lifecycle noise  -->
+    <logger name="org.hibernate.SQL" level="WARN"/>
+    <logger name="org.hibernate.orm.jdbc.bind" level="WARN"/>
+    <logger name="org.hibernate.orm.core" level="WARN"/>
+    <logger name="org.hibernate.orm.event" level="WARN"/>
+    <logger name="org.hibernate.session.metrics" level="WARN"/>
+    <logger name="org.hibernate.engine.jdbc" level="WARN"/>
+    <!-- PostgreSQL JDBC driver — connection settings and protocol noise    -->
+    <logger name="org.postgresql.jdbc" level="WARN"/>
+    <logger name="org.postgresql.core" level="WARN"/>
+    <logger name="org.postgresql.Driver" level="WARN"/>
+    <!-- OkHttp — HTTP/2 frame-level and connection pool noise             -->
+    <logger name="okhttp3.internal.http2" level="WARN"/>
+    <logger name="okhttp3.internal.concurrent" level="WARN"/>
+    <logger name="okhttp3.OkHttpClient" level="WARN"/>
+    <!-- Spring / HikariCP                                                  -->
+    <logger name="org.springframework.web" level="INFO"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="com.zaxxer.hikari" level="INFO"/>
+
+    <!-- ── Default root logger (INFO, console + file) ─────────────────── -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <!-- ── local profile: upgrade io.therapistai to DEBUG + add debug file -->
+    <!-- Root stays at INFO so third-party libraries stay quiet.            -->
+    <!-- Only application code (io.therapistai) is elevated to DEBUG.       -->
+    <springProfile name="local">
+        <logger name="io.therapistai" level="DEBUG"/>
+        <logger name="io.therapistai.json" level="DEBUG"/>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="DEBUG_FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>
+

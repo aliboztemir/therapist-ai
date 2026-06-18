@@ -6,10 +6,21 @@ spring:
     openai:
       api-key: ${OPENAI_API_KEY}
 
+  # Datasource is configured via:
+  #   - Docker Compose service-connection (local dev, compose.yaml label)
+  #   - Testcontainers @ServiceConnection (tests)
+  #   - spring.datasource.* env vars in production (set DB_URL, DB_USERNAME, DB_PASSWORD)
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+
   autoconfigure:
     exclude:
-      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
-      - org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration
       - org.springframework.ai.vectorstore.pgvector.autoconfigure.PgVectorStoreAutoConfiguration
 
 management:
@@ -27,3 +38,58 @@ turnstile:
   # Leave blank for local dev — verification is skipped automatically.
   # Set TURNSTILE_SECRET_KEY env var in production.
   secret-key: ${TURNSTILE_SECRET_KEY:}
+
+chat:
+  conversation:
+    # Number of turns (user + assistant pairs) to keep in context.
+    # 30 turns ≈ 10 000 tokens — well within GPT-4o's 128 K limit.
+    # Override with CHAT_CONVERSATION_MAX_TURNS env var in production.
+    max-turns: ${CHAT_CONVERSATION_MAX_TURNS:30}
+
+logging:
+  level:
+    io.therapistai: INFO
+    io.therapistai.chat.flow: DEBUG
+    io.therapistai.chat.application.ChatOrchestrator: DEBUG
+    io.therapistai.chat.api.ChatController: DEBUG
+    io.therapistai.ai.infrastructure.OpenAiProviderAdapter: DEBUG
+    io.therapistai.analysis.infrastructure.LlmMessageAnalysisAdapter: DEBUG
+    io.therapistai.memory.application.MemoryExtractionService: DEBUG
+    io.therapistai.memory.application.MemoryRetrievalService: DEBUG
+    io.therapistai.knowledge.application.KnowledgeRetrievalService: DEBUG
+    io.therapistai.prompt.application.PromptAssemblyService: DEBUG
+    io.therapistai.risk.infrastructure.RuleBasedRiskScanner: DEBUG
+    io.therapistai.chat.infrastructure: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+
+therapistai:
+  analysis:
+    # Low temperature produces deterministic, structured JSON output.
+    # Override with THERAPISTAI_ANALYSIS_TEMPERATURE env var if needed.
+    temperature: ${THERAPISTAI_ANALYSIS_TEMPERATURE:0.1}
+  memory:
+    extraction:
+      # Hard timeout for the memory extraction AI call in milliseconds.
+      # Production LLM calls for extraction have been observed to stall for 60+ seconds
+      # when the model returns minimal content. This cap prevents pipeline blocking.
+      # Override with THERAPISTAI_MEMORY_EXTRACTION_TIMEOUT_MS env var if needed.
+      timeout-ms: ${THERAPISTAI_MEMORY_EXTRACTION_TIMEOUT_MS:15000}
+  logging:
+    decision-trace-enabled: true
+    body-preview-enabled: true
+    max-preview-chars: 300
+    prompt-preview-enabled: false
+    ai-response-preview-enabled: true
+    db-write-preview-enabled: true
+    # Structured JSON debug logging — disabled by default, enabled per-profile below
+    structured-json-enabled: false
+    full-json-enabled: false
+    full-json-local-only: true   # safety: never emit full JSON outside local/dev
+    max-json-chars: 20000
+    log-full-prompt: false
+    log-full-ai-response: false
+    log-full-memory: false
+    log-full-knowledge: false
+

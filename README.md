@@ -1,16 +1,22 @@
 # TherapistAI
 
-TherapistAI is a modern reimplementation of my university graduation thesis project, originally developed approximately 15 years ago.
+TherapistAI is an AI-powered psychotherapy-inspired conversational platform — and a modern reimplementation of my
+university graduation thesis project, originally developed approximately 15 years ago.
 
 The original project was built in Java and focused on Turkish Natural Language Processing (NLP). At the time, large language models did not exist, so the system relied on linguistic analysis, text similarity algorithms, and handcrafted conversational rules to simulate therapist-style interactions.
 
-The application analyzed user messages using Turkish NLP tools such as Zemberek and searched psychotherapy-inspired dialogue datasets to identify similar conversations and generate relevant responses.
+Fifteen years later, this project revisits the same idea using modern AI technologies. Instead of relying solely on
+keyword matching and similarity algorithms, TherapistAI leverages Large Language Models, conversational memory,
+structured therapy reasoning, and Retrieval-Augmented Generation (RAG) concepts to create safe, explainable, and
+context-aware interactions.
 
-Fifteen years later, this project revisits the same idea using modern AI technologies.
+---
 
-Instead of relying solely on keyword matching and similarity algorithms, TherapistAI leverages Large Language Models (LLMs), conversational memory, semantic search, vector embeddings, and Retrieval-Augmented Generation (RAG) concepts to create more natural and context-aware interactions.
+## Documentation
 
-This project serves both as a modernization of an academic NLP project and as an exploration of how conversational AI has evolved over the last decade and a half.
+| Document                                      | Description                                                               |
+|-----------------------------------------------|---------------------------------------------------------------------------|
+| [Architecture & Design](docs/ARCHITECTURE.md) | Master architecture, module structure, data flow, principles, and roadmap |
 
 ---
 
@@ -28,15 +34,17 @@ This project serves both as a modernization of an academic NLP project and as an
 
 ## Technology Stack
 
-* Java 25
-* Spring Boot 4
-* Spring AI
-* OpenAI
-* PostgreSQL
-* pgvector
-* Docker
-* Maven
-* Render
+| Layer            | Technology            |
+|------------------|-----------------------|
+| Language         | Java 25               |
+| Framework        | Spring Boot 4         |
+| AI Framework     | Spring AI             |
+| AI Provider      | OpenAI                |
+| Database         | PostgreSQL            |
+| Security         | Spring Security + JWT |
+| Containerisation | Docker                |
+| Build            | Maven                 |
+| Deployment       | Render                |
 
 ---
 
@@ -80,54 +88,69 @@ This project serves both as a modernization of an academic NLP project and as an
 
 ### Milestone 6 — Cloud Deployment ✅
 
-* Docker containerization
+* Docker containerisation
 * Render deployment
 * Public demo environment
 * Health monitoring
 
-### Milestone 7 — Safety Layer 🔄 In Progress
+### Milestone 7 — Modular Architecture ✅
 
-* Basic guardrails
-* High-risk content detection
-* Crisis response handling
-* Safety-related test coverage
+* Hexagonal architecture (Ports & Adapters)
+* Domain-Driven Design module boundaries
+* Analysis module (emotion, sentiment, themes)
+* Risk module (crisis detection, safety escalation)
+* Therapy module (mode, stage, approach, goal)
+* Memory module (extraction, retrieval, persistence)
+* Knowledge module (keyword-based retrieval)
+* Prompt module (layered prompt assembly)
+* Summary module (async session compression)
+* Analytics module (usage and therapy metrics)
+* Observability module (latency, error tracking)
+* Event-driven async post-processing
 
-### Milestone 8 — Knowledge Base Ingestion ⏳ Planned
+### Milestone 8 — End-to-End Observability ✅
+
+* TraceId propagation via MDC
+* Structured log format `[EVENT_NAME] traceId=X key=value`
+* Privacy-safe logging (`LogSanitizer`)
+* Per-step latency tracking
+* Domain decision result logs for every pipeline step
+* DB write logs for all persistence operations
+* `[CHAT_FLOW_DECISION_SUMMARY]` per request
+
+### Milestone 9 — Knowledge Base Ingestion ⏳ Planned
 
 * Psychotherapy datasets
 * Document ingestion pipeline
-* Dataset normalization
+* Dataset normalisation
 * Chunk generation
 
-### Milestone 9 — Embeddings & Vector Storage ⏳ Planned
+### Milestone 10 — Embeddings & Vector Storage ⏳ Planned
 
 * OpenAI embeddings
-* PostgreSQL integration
-* pgvector integration
+* PostgreSQL pgvector integration
 * Embedding generation pipeline
 
-### Milestone 10 — Semantic Retrieval (RAG) ⏳ Planned
+### Milestone 11 — Semantic Retrieval (RAG) ⏳ Planned
 
 * Similarity search
-* Context retrieval
+* Hybrid RAG (keyword + semantic)
 * Retrieval-Augmented Generation
 * Source grounding
 
-### Milestone 11 — Persistent Memory ⏳ Planned
+### Milestone 12 — Psychological Profile Engine ⏳ Planned
 
-* Long-term conversations
-* User profiles
-* Conversation history
-* Database persistence
+* Attachment pattern detection
+* Recurring fear modelling
+* Coping mechanism mapping
+* Self-worth pattern tracking
 
-### Milestone 12 — Production Readiness ⏳ Planned
+### Milestone 13 — Production Hardening ⏳ Planned
 
-* Observability
-* Metrics
-* Logging
 * Security hardening
 * CI/CD improvements
-* Scalability improvements
+* Scalability review
+* Multi-provider AI routing
 
 ---
 
