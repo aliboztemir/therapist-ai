@@ -39,13 +39,4 @@ public class JpaMessageAnalysisRepository
 
         jpaRepository.save(entity);
     }
-
-    @Override
-    public Optional<MessageAnalysis> findByMessageId(
-            UUID messageId
-    ) {
-        return jpaRepository
-                .findByMessageId(messageId)
-                .map(MessageAnalysisMapper::toDomain);
-    }
 }

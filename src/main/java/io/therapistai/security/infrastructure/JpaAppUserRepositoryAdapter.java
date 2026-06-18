@@ -65,7 +65,7 @@ class JpaAppUserRepositoryAdapter implements AppUserRepository {
             AppUserEntity entity,
             AppUser user
     ) {
-        entity.setPassword(user.getPassword());
+        entity.setPasswordHash(user.getPassword());
         entity.setFullName(user.getFullName());
         entity.setPreferredName(user.getPreferredName());
         entity.setBirthDate(user.getBirthDate());

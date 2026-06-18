@@ -4,7 +4,16 @@ import io.therapistai.memory.domain.ConstraintType;
 import io.therapistai.memory.domain.MemoryKey;
 import io.therapistai.memory.domain.MemoryStatus;
 import io.therapistai.memory.domain.MemoryType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -12,6 +21,8 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
         name = "memories",
@@ -115,64 +126,10 @@ public class MemoryEntity {
         this.createdAt = createdAt;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public MemoryType getMemoryType() {
-        return memoryType;
-    }
-
-    public MemoryKey getMemoryKey() {
-        return memoryKey;
-    }
-
-    public String getMemoryValue() {
-        return memoryValue;
-    }
-
-    public ConstraintType getConstraintType() {
-        return constraintType;
-    }
-
-    public MemoryStatus getStatus() {
-        return status;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public UUID getParentMemoryId() {
-        return parentMemoryId;
-    }
-
-    public Double getConfidence() {
-        return confidence;
-    }
-
-    public Integer getImportance() {
-        return importance;
-    }
-
-    public UUID getConversationId() {
-        return conversationId;
-    }
-
-    public UUID getMessageId() {
-        return messageId;
-    }
-
     public Map<String, Object> getMetadata() {
-        return metadata == null ? Map.of() : Map.copyOf(metadata);
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
+        return metadata == null
+                ? Map.of()
+                : Map.copyOf(metadata);
     }
 
     public void archive() {

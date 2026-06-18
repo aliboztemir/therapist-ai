@@ -15,7 +15,6 @@ public final class TherapistUserPrincipal implements UserDetails, UserIdentity {
     private final String username;
     private final String passwordHash;
     private final boolean enabled;
-    private final boolean onboardingCompleted;
     private final String email;
     private final String fullName;
     private final List<GrantedAuthority> authorities;
@@ -25,7 +24,6 @@ public final class TherapistUserPrincipal implements UserDetails, UserIdentity {
             String username,
             String passwordHash,
             boolean enabled,
-            boolean onboardingCompleted,
             String email,
             String fullName,
             List<GrantedAuthority> authorities
@@ -34,7 +32,6 @@ public final class TherapistUserPrincipal implements UserDetails, UserIdentity {
         this.username = Objects.requireNonNull(username, "username must not be null");
         this.passwordHash = Objects.requireNonNull(passwordHash, "passwordHash must not be null");
         this.enabled = enabled;
-        this.onboardingCompleted = onboardingCompleted;
         this.email = email;
         this.fullName = fullName;
         this.authorities = authorities != null ? List.copyOf(authorities) : List.of();
@@ -93,7 +90,6 @@ public final class TherapistUserPrincipal implements UserDetails, UserIdentity {
             String username,
             String passwordHash,
             boolean enabled,
-            boolean onboardingCompleted,
             String email,
             String fullName
     ) {
@@ -102,7 +98,6 @@ public final class TherapistUserPrincipal implements UserDetails, UserIdentity {
                 username,
                 passwordHash,
                 enabled,
-                onboardingCompleted,
                 email,
                 fullName,
                 List.of((GrantedAuthority) () -> "ROLE_USER")

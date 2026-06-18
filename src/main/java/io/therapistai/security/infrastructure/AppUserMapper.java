@@ -12,7 +12,7 @@ class AppUserMapper {
                 e.getUserUuid(),
                 e.getUsername(),
                 e.getEmail(),
-                e.getPassword(),
+                e.getPasswordHash(),
                 e.getFullName(),
                 e.getPreferredName(),
                 e.getBirthDate(),

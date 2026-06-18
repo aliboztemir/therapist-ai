@@ -48,7 +48,6 @@ public class AppUserDetailsService implements UserDetailsService, UserProfileSer
                 user.getUsername(),
                 user.getPassword(),
                 user.isEnabled(),
-                user.isOnboardingCompleted(),
                 user.getEmail(),
                 resolveDisplayName(user)
         );

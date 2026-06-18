@@ -1,13 +1,36 @@
 package io.therapistai.analysis.infrastructure;
 
-import io.therapistai.analysis.domain.*;
-import jakarta.persistence.*;
+import io.therapistai.analysis.domain.CognitiveSignal;
+import io.therapistai.analysis.domain.CommunicationStyle;
+import io.therapistai.analysis.domain.DisclosureLevel;
+import io.therapistai.analysis.domain.EmotionType;
+import io.therapistai.analysis.domain.MessageTheme;
+import io.therapistai.analysis.domain.MessageType;
+import io.therapistai.analysis.domain.SentimentType;
+import io.therapistai.analysis.domain.TemporalFocus;
+import io.therapistai.analysis.domain.UserIntent;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
         name = "message_analysis",
@@ -163,87 +186,7 @@ public class MessageAnalysisEntity {
         }
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public UUID getMessageId() {
-        return messageId;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public UUID getConversationId() {
-        return conversationId;
-    }
-
-    public MessageType getMessageType() {
-        return messageType;
-    }
-
-    public UserIntent getUserIntent() {
-        return userIntent;
-    }
-
-    public EmotionType getPrimaryEmotion() {
-        return primaryEmotion;
-    }
-
-    public EmotionType getSecondaryEmotion() {
-        return secondaryEmotion;
-    }
-
-    public SentimentType getSentiment() {
-        return sentiment;
-    }
-
     public int getEmotionalIntensity() {
         return emotionalIntensity;
-    }
-
-    public Set<MessageTheme> getThemes() {
-        return themes;
-    }
-
-    public TemporalFocus getTemporalFocus() {
-        return temporalFocus;
-    }
-
-    public Set<CommunicationStyle> getCommunicationStyles() {
-        return communicationStyles;
-    }
-
-    public Set<CognitiveSignal> getCognitiveSignals() {
-        return cognitiveSignals;
-    }
-
-    public DisclosureLevel getDisclosureLevel() {
-        return disclosureLevel;
-    }
-
-    public boolean isAdviceSeeking() {
-        return adviceSeeking;
-    }
-
-    public boolean isBoundaryTest() {
-        return boundaryTest;
-    }
-
-    public boolean isCrisisSignalDetected() {
-        return crisisSignalDetected;
-    }
-
-    public double getConfidence() {
-        return confidence;
-    }
-
-    public String getFallbackReason() {
-        return fallbackReason;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
     }
 }
