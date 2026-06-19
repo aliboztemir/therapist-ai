@@ -228,18 +228,10 @@ public enum MemoryType {
     }
 
     public boolean allows(MemoryKey key) {
-        return key != null && allowedKeys.contains(key);
-    }
-
-    public boolean isUnique() {
-        return constraintType == ConstraintType.UNIQUE;
+        return allowedKeys.contains(key);
     }
 
     public boolean isAccumulative() {
         return constraintType == ConstraintType.ACCUMULATIVE;
-    }
-
-    public boolean isEvolutionary() {
-        return constraintType == ConstraintType.EVOLUTIONARY;
     }
 }

@@ -39,13 +39,6 @@ public class JpaChatMessageRepository implements ChatMessageRepository {
     }
 
     @Override
-    public Optional<ChatMessage> findById(UUID messageId) {
-        return jpaRepository
-                .findById(messageId)
-                .map(this::toDomain);
-    }
-
-    @Override
     public List<ChatMessage> findRecentMessages(
             UUID conversationId,
             int limit
@@ -73,11 +66,6 @@ public class JpaChatMessageRepository implements ChatMessageRepository {
     @Override
     public int nextMessageOrder(UUID conversationId) {
         return jpaRepository.nextMessageOrder(conversationId);
-    }
-
-    @Override
-    public long countByConversationId(UUID conversationId) {
-        return jpaRepository.countByConversationId(conversationId);
     }
 
     private ChatMessage toDomain(ChatMessageEntity entity) {

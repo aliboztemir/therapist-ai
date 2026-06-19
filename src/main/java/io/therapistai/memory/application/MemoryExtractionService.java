@@ -422,7 +422,7 @@ class MemoryExtractionService {
             MemoryType type = parseMemoryType(typeNode.asText());
             MemoryKey key = parseMemoryKey(keyNode.asText());
 
-            if (type == null || key == null || !type.allows(key)) {
+            if (!type.allows(key)) {
                 return null;
             }
 

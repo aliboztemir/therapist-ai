@@ -44,10 +44,7 @@ public final class MemoryCandidate {
     }
 
     public boolean isValid() {
-        return type != null
-                && key != null
-                && type.allows(key)
-                && value != null
+        return type.allows(key)
                 && !value.isBlank();
     }
 

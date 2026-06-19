@@ -22,14 +22,14 @@ class AppUserEntity {
     )
     private UUID userUuid;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false, unique = true, length = 254)
     private String email;
 
-    @Column(nullable = false, length = 255)
-    private String password;
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
 
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
@@ -67,11 +67,14 @@ class AppUserEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    protected AppUserEntity() {
+    }
+
     AppUserEntity(
             UUID userUuid,
             String username,
             String email,
-            String password,
+            String passwordHash,
             String fullName,
             String preferredName,
             LocalDate birthDate,
@@ -88,7 +91,7 @@ class AppUserEntity {
         this.userUuid = userUuid;
         this.username = username;
         this.email = email;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.fullName = fullName;
         this.preferredName = preferredName;
         this.birthDate = birthDate;
@@ -137,8 +140,8 @@ class AppUserEntity {
         return email;
     }
 
-    String getPassword() {
-        return password;
+    String getPasswordHash() {
+        return passwordHash;
     }
 
     String getFullName() {
@@ -189,8 +192,8 @@ class AppUserEntity {
         return updatedAt;
     }
 
-    void setPassword(String password) {
-        this.password = password;
+    void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     void setFullName(String fullName) {
